@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The VentureX — Share Your Moment</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Kufi+Arabic:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0D1117;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: #161B22;
+    border: 1px solid #30363D;
+    border-radius: 4px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .logo {
+    width: 90px;
+    height: auto;
+    filter: invert(1);
+    margin-bottom: 14px;
+  }
+
+  .divider {
+    width: 32px;
+    height: 2px;
+    background: #FFFFFF;
+    margin: 12px auto;
+  }
+
+  .header h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+
+  .header .arabic-name {
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-size: 11px;
+    color: #8B949E;
+    direction: rtl;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    font-size: 13px;
+    color: #8B949E;
+    margin-top: 4px;
+  }
+
+  .photo-area {
+    background: #0D1117;
+    border: 1px solid #30363D;
+    border-radius: 4px;
+    padding: 22px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .photo-area:hover { border-color: #8B949E; }
+  .photo-area svg { opacity: 0.6; }
+  .photo-area p {
+    color: #8B949E;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  .photo-area span {
+    color: #484F58;
+    font-size: 11px;
+    display: block;
+    margin-top: 4px;
+  }
+
+  #preview {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    display: none;
+    filter: grayscale(0.2);
+  }
+
+  #fileInput { display: none; }
+
+  input, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #30363D;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 12px;
+    outline: none;
+    background: #0D1117;
+    color: #FFFFFF;
+    transition: border-color 0.2s;
+  }
+  input::placeholder, textarea::placeholder { color: #484F58; }
+  input:focus, textarea:focus { border-color: #8B949E; }
+  textarea { resize: none; height: 80px; }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #FFFFFF;
+    color: #0D1117;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #E6EDF3; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .status {
+    text-align: center;
+    font-size: 12px;
+    color: #8B949E;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+
+  .success {
+    display: none;
+    text-align: center;
+    padding: 24px 0;
+  }
+
+  .success .checkmark {
+    width: 48px;
+    height: 48px;
+    border: 1.5px solid #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: #FFFFFF;
+    font-size: 20px;
+  }
+
+  .success h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+  }
+
+  .success p {
+    font-size: 13px;
+    color: #8B949E;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #484F58;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: lowercase;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div id="formSection">
+    <div class="header">
+      <img src="VX_logo.png" class="logo" alt="The VentureX" />
+      <div class="arabic-name">المتكاملة لتنمية المشاريع الريادية</div>
+      <div class="divider"></div>
+      <h1>Share Your Moment</h1>
+      <p>Capture and share your experience with us</p>
+    </div>
+
+    <div class="photo-area" onclick="document.getElementById('fileInput').click()">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="square">
+        <rect x="2" y="6" width="20" height="15" rx="0"/>
+        <circle cx="12" cy="13" r="4"/>
+        <path d="M8 6l2-3h4l2 3"/>
+      </svg>
+      <p>Tap to take a photo or choose from gallery</p>
+      <span>JPG, PNG supported</span>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="previewPhoto(event)" />
+    <img id="preview" alt="Preview" />
+
+    <input type="text" id="nameInput" placeholder="Your name" maxlength="60" />
+    <textarea id="captionInput" placeholder="Add a caption to your moment..." maxlength="200"></textarea>
+
+    <button class="btn" id="submitBtn" onclick="submitPhoto()">Submit Your Moment</button>
+    <p class="status" id="statusMsg"></p>
+  </div>
+
+  <div class="success" id="successSection">
+    <div class="checkmark">✓</div>
+    <h2>Thank you.</h2>
+    <p>Your moment has been captured and shared successfully.</p>
+  </div>
+
+  <div class="footer">theventurex.com</div>
+</div>
+
+<script>
+  const CLOUD_NAME = 'de3sgcfwz';
+  const UPLOAD_PRESET = 'event-photos-upload';
+
+  function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const preview = document.getElementById('preview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function submitPhoto() {
+    const file = document.getElementById('fileInput').files[0];
+    const name = document.getElementById('nameInput').value.trim();
+    const caption = document.getElementById('captionInput').value.trim();
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('statusMsg');
+
+    if (!file) { status.textContent = 'Please select a photo first.'; return; }
+    if (!name) { status.textContent = 'Please enter your name.'; return; }
+
+    btn.disabled = true;
+    status.textContent = 'Uploading...';
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET);
+    formData.append('context', `name=${name}|caption=${caption}`);
+    formData.append('tags', `name_${name.replace(/\s+/g, '_')}`);
+
+    try {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.secure_url) {
+        document.getElementById('formSection').style.display = 'none';
+        document.getElementById('successSection').style.display = 'block';
+      } else {
+        status.textContent = 'Something went wrong. Please try again.';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      status.textContent = 'Upload failed. Check your connection and try again.';
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
