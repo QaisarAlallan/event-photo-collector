@@ -31,30 +31,117 @@
   .header .arabic-name { font-family: 'Noto Kufi Arabic', sans-serif; font-size: 11px; color: #8B949E; direction: rtl; margin-bottom: 8px; }
   .event-badge { display: inline-block; background: #0D1117; border: 1px solid #30363D; color: #8B949E; font-size: 11px; padding: 4px 12px; margin-top: 8px; letter-spacing: 0.5px; }
   .header p { font-size: 13px; color: #8B949E; margin-top: 8px; }
-  .photo-area { background: #0D1117; border: 1px solid #30363D; border-radius: 4px; padding: 22px; text-align: center; cursor: pointer; margin-bottom: 14px; transition: border-color 0.2s; }
+
+  .photo-area {
+    background: #0D1117;
+    border: 1px solid #30363D;
+    border-radius: 4px;
+    padding: 22px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
   .photo-area:hover { border-color: #8B949E; }
   .photo-area svg { opacity: 0.6; }
   .photo-area p { color: #8B949E; font-size: 13px; margin-top: 8px; }
   .photo-area span { color: #484F58; font-size: 11px; display: block; margin-top: 4px; }
-  #preview { width: 100%; border-radius: 4px; margin-bottom: 14px; display: none; filter: grayscale(0.2); }
+
+  .upload-options {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .upload-btn {
+    flex: 1;
+    padding: 12px;
+    background: #0D1117;
+    border: 1px solid #30363D;
+    border-radius: 4px;
+    color: #8B949E;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    text-align: center;
+  }
+  .upload-btn:hover { border-color: #8B949E; color: #FFFFFF; }
+
+  #preview {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    display: none;
+    filter: grayscale(0.2);
+  }
+
   #fileInput { display: none; }
-  input, textarea { width: 100%; padding: 12px 14px; border: 1px solid #30363D; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; margin-bottom: 12px; outline: none; background: #0D1117; color: #FFFFFF; transition: border-color 0.2s; }
-  input::placeholder, textarea::placeholder { color: #484F58; }
-  input:focus, textarea:focus { border-color: #8B949E; }
+  #cameraInput { display: none; }
+
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #30363D;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 12px;
+    outline: none;
+    background: #0D1117;
+    color: #FFFFFF;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]::placeholder, textarea::placeholder { color: #484F58; }
+  input[type="text"]:focus, textarea:focus { border-color: #8B949E; }
   textarea { resize: none; height: 80px; }
-  .btn { width: 100%; padding: 14px; background: #FFFFFF; color: #0D1117; border: none; border-radius: 4px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; letter-spacing: 0.3px; cursor: pointer; transition: background 0.2s; }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #FFFFFF;
+    color: #0D1117;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
   .btn:hover { background: #E6EDF3; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .status { text-align: center; font-size: 12px; color: #8B949E; margin-top: 10px; min-height: 18px; }
+
+  .status {
+    text-align: center;
+    font-size: 12px;
+    color: #8B949E;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+
   .success { display: none; text-align: center; padding: 24px 0; }
-  .success .checkmark { width: 48px; height: 48px; border: 1.5px solid #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #FFFFFF; font-size: 20px; }
+  .success .checkmark {
+    width: 48px;
+    height: 48px;
+    border: 1.5px solid #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: #FFFFFF;
+    font-size: 20px;
+  }
   .success h2 { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
   .success p { font-size: 13px; color: #8B949E; }
+
   .footer { text-align: center; margin-top: 20px; color: #484F58; font-size: 10px; letter-spacing: 0.8px; }
 </style>
 </head>
 <body>
 <div class="card">
+
   <div id="formSection">
     <div class="header">
       <img src="VX_logo.png" class="logo" alt="The VentureX" />
@@ -65,20 +152,25 @@
       <p>Capture and share your experience with us</p>
     </div>
 
-    <div class="photo-area" onclick="document.getElementById('fileInput').click()">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="square">
-        <rect x="2" y="6" width="20" height="15" rx="0"/>
-        <circle cx="12" cy="13" r="4"/>
-        <path d="M8 6l2-3h4l2 3"/>
-      </svg>
-      <p>Tap to take a photo or choose from gallery</p>
-      <span>JPG, PNG supported</span>
+    <div class="upload-options">
+      <button class="upload-btn" onclick="document.getElementById('cameraInput').click()">
+        📷 Take a Photo
+      </button>
+      <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+        🖼️ Upload from Gallery
+      </button>
     </div>
 
-    <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="previewPhoto(event)" />
+    <!-- Camera input — opens camera directly -->
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="previewPhoto(event)" />
+    <!-- Gallery input — opens file picker -->
+    <input type="file" id="fileInput" accept="image/*" onchange="previewPhoto(event)" />
+
     <img id="preview" alt="Preview" />
+
     <input type="text" id="nameInput" placeholder="Your name" maxlength="60" />
     <textarea id="captionInput" placeholder="Add a caption to your moment..." maxlength="200"></textarea>
+
     <button class="btn" id="submitBtn" onclick="submitPhoto()">Submit Your Moment</button>
     <p class="status" id="statusMsg"></p>
   </div>
@@ -96,12 +188,10 @@
   const CLOUD_NAME = 'de3sgcfwz';
   const UPLOAD_PRESET = 'event-photos-upload';
 
-  // Read event name from URL ?event=Event-Name
   const params = new URLSearchParams(window.location.search);
   const eventName = params.get('event') ? params.get('event').replace(/-/g, ' ') : 'General Event';
   const eventTag = params.get('event') || 'General-Event';
 
-  // Show event name on page
   document.getElementById('eventBadge').textContent = eventName.toUpperCase();
 
   function previewPhoto(event) {
@@ -117,13 +207,15 @@
   }
 
   async function submitPhoto() {
-    const file = document.getElementById('fileInput').files[0];
+    const cameraFile = document.getElementById('cameraInput').files[0];
+    const galleryFile = document.getElementById('fileInput').files[0];
+    const file = cameraFile || galleryFile;
     const name = document.getElementById('nameInput').value.trim();
     const caption = document.getElementById('captionInput').value.trim();
     const btn = document.getElementById('submitBtn');
     const status = document.getElementById('statusMsg');
 
-    if (!file) { status.textContent = 'Please select a photo first.'; return; }
+    if (!file) { status.textContent = 'Please take or upload a photo first.'; return; }
     if (!name) { status.textContent = 'Please enter your name.'; return; }
 
     btn.disabled = true;
