@@ -319,9 +319,10 @@
         </button>
       </div>
 
-      <input type="file" id="camInput" accept="image/*" capture="environment" multiple style="display:none" onchange="previewPhotos(event)" />
-      <input type="file" id="galInput" accept="image/*" multiple style="display:none" onchange="previewPhotos(event)" />
-      <div id="previewGrid" style="display:none; display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;"></div>
+      <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(event)" />
+      <input type="file" id="galInput" accept="image/*" multiple style="display:none" onchange="addPhotos(event)" />
+      <div id="previewGrid" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;"></div>
+      <p id="photoCount" style="font-family:'Cormorant Garamond',serif; font-size:12px; font-style:italic; color:#8B7355; text-align:center; margin-bottom:12px; min-height:16px;"></p>
 
       <div class="field-wrap">
         <label class="field-label" for="nameInput">Your Name</label>
@@ -363,43 +364,62 @@
   const EVENT_TAG = 'Eliza-Essam-Wedding';
   const EVENT_NAME = 'Eliza & Essam Wedding';
 
-  function previewPhotos(e) {
+  let collectedFiles = [];
+
+  function updateCount() {
+    const count = collectedFiles.length;
+    const el = document.getElementById('photoCount');
+    el.textContent = count > 0 ? `${count} photo${count > 1 ? 's' : ''} ready to submit` : '';
+  }
+
+  function addPhotoToGrid(file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const grid = document.getElementById('previewGrid');
+      const img = document.createElement('img');
+      img.src = ev.target.result;
+      img.style.cssText = 'width:calc(50% - 4px); height:100px; object-fit:cover; border-radius:6px; opacity:0.9;';
+      grid.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function addPhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    collectedFiles.push(file);
+    addPhotoToGrid(file);
+    updateCount();
+    e.target.value = '';
+  }
+
+  function addPhotos(e) {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-    const grid = document.getElementById('previewGrid');
-    grid.innerHTML = '';
-    grid.style.display = 'flex';
     files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const img = document.createElement('img');
-        img.src = ev.target.result;
-        img.style.cssText = 'width:calc(50% - 4px); height:100px; object-fit:cover; border-radius:6px; opacity:0.9;';
-        grid.appendChild(img);
-      };
-      reader.readAsDataURL(file);
+      collectedFiles.push(file);
+      addPhotoToGrid(file);
     });
+    updateCount();
+    e.target.value = '';
   }
 
   async function submitPhoto() {
-    const camFiles = Array.from(document.getElementById('camInput').files);
-    const galFiles = Array.from(document.getElementById('galInput').files);
-    const files = [...camFiles, ...galFiles];
     const name = document.getElementById('nameInput').value.trim();
     const note = document.getElementById('noteInput').value.trim();
     const btn = document.getElementById('submitBtn');
     const status = document.getElementById('statusMsg');
 
-    if (!files.length) { status.textContent = 'Please take or upload a photo first.'; return; }
+    if (!collectedFiles.length) { status.textContent = 'Please take or upload a photo first.'; return; }
     if (!name) { status.textContent = 'Please enter your name.'; return; }
 
     btn.disabled = true;
-    status.textContent = `Uploading ${files.length} photo${files.length > 1 ? 's' : ''}...`;
+    status.textContent = `Uploading ${collectedFiles.length} photo${collectedFiles.length > 1 ? 's' : ''}...`;
 
     let uploaded = 0;
     let failed = 0;
 
-    await Promise.all(files.map(async (file) => {
+    await Promise.all(collectedFiles.map(async (file) => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', UPLOAD_PRESET);
@@ -420,10 +440,7 @@
       }
     }));
 
-    if (uploaded > 0 && failed === 0) {
-      document.getElementById('formSection').style.display = 'none';
-      document.getElementById('successSection').style.display = 'block';
-    } else if (uploaded > 0 && failed > 0) {
+    if (uploaded > 0) {
       document.getElementById('formSection').style.display = 'none';
       document.getElementById('successSection').style.display = 'block';
     } else {
