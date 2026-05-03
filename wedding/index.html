@@ -319,9 +319,9 @@
         </button>
       </div>
 
-      <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="previewPhoto(event)" />
-      <input type="file" id="galInput" accept="image/*" style="display:none" onchange="previewPhoto(event)" />
-      <img id="preview" alt="Your photo preview" />
+      <input type="file" id="camInput" accept="image/*" capture="environment" multiple style="display:none" onchange="previewPhotos(event)" />
+      <input type="file" id="galInput" accept="image/*" multiple style="display:none" onchange="previewPhotos(event)" />
+      <div id="previewGrid" style="display:none; display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;"></div>
 
       <div class="field-wrap">
         <label class="field-label" for="nameInput">Your Name</label>
@@ -335,6 +335,10 @@
 
       <button type="button" class="submit-btn" id="submitBtn" onclick="submitPhoto()">Share Your Moment</button>
       <p class="status-msg" id="statusMsg"></p>
+      <div style="text-align:center; margin-top:16px; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#B8A07A;">Powered by</span>
+        <img src="Ceaser-01.png" alt="Gather" style="height:22px; width:auto; mix-blend-mode:multiply; opacity:0.7;" />
+      </div>
     </div>
 
     </div>
@@ -359,54 +363,70 @@
   const EVENT_TAG = 'Eliza-Essam-Wedding';
   const EVENT_NAME = 'Eliza & Essam Wedding';
 
-  function previewPhoto(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const p = document.getElementById('preview');
-      p.src = ev.target.result;
-      p.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
+  function previewPhotos(e) {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    const grid = document.getElementById('previewGrid');
+    grid.innerHTML = '';
+    grid.style.display = 'flex';
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = document.createElement('img');
+        img.src = ev.target.result;
+        img.style.cssText = 'width:calc(50% - 4px); height:100px; object-fit:cover; border-radius:6px; opacity:0.9;';
+        grid.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   async function submitPhoto() {
-    const camFile = document.getElementById('camInput').files[0];
-    const galFile = document.getElementById('galInput').files[0];
-    const file = camFile || galFile;
+    const camFiles = Array.from(document.getElementById('camInput').files);
+    const galFiles = Array.from(document.getElementById('galInput').files);
+    const files = [...camFiles, ...galFiles];
     const name = document.getElementById('nameInput').value.trim();
     const note = document.getElementById('noteInput').value.trim();
     const btn = document.getElementById('submitBtn');
     const status = document.getElementById('statusMsg');
 
-    if (!file) { status.textContent = 'Please take or upload a photo first.'; return; }
+    if (!files.length) { status.textContent = 'Please take or upload a photo first.'; return; }
     if (!name) { status.textContent = 'Please enter your name.'; return; }
 
     btn.disabled = true;
-    status.textContent = 'Uploading...';
+    status.textContent = `Uploading ${files.length} photo${files.length > 1 ? 's' : ''}...`;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET);
-    formData.append('context', `name=${name}|note=${note}|event=${EVENT_NAME}`);
-    formData.append('tags', `event_${EVENT_TAG},name_${name.replace(/\s+/g, '_')}`);
-    formData.append('folder', `event-photos/${EVENT_TAG}`);
+    let uploaded = 0;
+    let failed = 0;
 
-    try {
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      if (data.secure_url) {
-        document.getElementById('formSection').style.display = 'none';
-        document.getElementById('successSection').style.display = 'block';
-      } else {
-        status.textContent = 'Something went wrong. Please try again.';
-        btn.disabled = false;
+    await Promise.all(files.map(async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', UPLOAD_PRESET);
+      formData.append('context', `name=${name}|note=${note}|event=${EVENT_NAME}`);
+      formData.append('tags', `event_${EVENT_TAG},name_${name.replace(/\s+/g, '_')}`);
+      formData.append('folder', `event-photos/${EVENT_TAG}`);
+
+      try {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.secure_url) uploaded++;
+        else failed++;
+      } catch {
+        failed++;
       }
-    } catch (err) {
+    }));
+
+    if (uploaded > 0 && failed === 0) {
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('successSection').style.display = 'block';
+    } else if (uploaded > 0 && failed > 0) {
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('successSection').style.display = 'block';
+    } else {
       status.textContent = 'Upload failed. Check your connection and try again.';
       btn.disabled = false;
     }
