@@ -372,6 +372,28 @@
     el.textContent = count > 0 ? `${count} photo${count > 1 ? 's' : ''} ready to submit` : '';
   }
 
+  function compressImage(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX = 1200;
+          let w = img.width, h = img.height;
+          if (w > h && w > MAX) { h = (h * MAX) / w; w = MAX; }
+          else if (h > MAX) { w = (w * MAX) / h; h = MAX; }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.75);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   function addPhotoToGrid(file) {
     const reader = new FileReader();
     reader.onload = ev => {
@@ -414,14 +436,15 @@
     if (!name) { status.textContent = 'Please enter your name.'; return; }
 
     btn.disabled = true;
-    status.textContent = `Uploading ${collectedFiles.length} photo${collectedFiles.length > 1 ? 's' : ''}...`;
+    status.textContent = `Compressing & uploading ${collectedFiles.length} photo${collectedFiles.length > 1 ? 's' : ''}...`;
 
     let uploaded = 0;
     let failed = 0;
 
     await Promise.all(collectedFiles.map(async (file) => {
+      const compressed = await compressImage(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressed, 'photo.jpg');
       formData.append('upload_preset', UPLOAD_PRESET);
       formData.append('context', `name=${name}|note=${note}|event=${EVENT_NAME}`);
       formData.append('tags', `event_${EVENT_TAG},name_${name.replace(/\s+/g, '_')}`);
